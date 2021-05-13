@@ -90,7 +90,7 @@ func HandleQuery(ctx *gin.Context) {
 			if target.Type == "timeserie" {
 				querData := &models.QueryData{
 					Target:     target.Target,
-					Datapoints: [][]interface{}{{1, time.Now().UnixNano()}},
+					Datapoints: [][]interface{}{{1, time.Now().Unix() * 1000}},
 				}
 				queryResponse = append(queryResponse, *querData)
 			}
