@@ -17,7 +17,7 @@ func InitRouter() {
 
 	v1 := route.Group("/api/v1")
 	{
-		v1.GET("/", handler.HandleRoot)
+		v1.Any("/", handler.HandleRoot)
 		v1.POST("/search", handler.HandleSearch)
 		v1.POST("/query", handler.HandleQuery)
 		v1.POST("/login", handler.HandleLogin)
