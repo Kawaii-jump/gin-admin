@@ -1,0 +1,119 @@
+basePath: /api/v1
+definitions:
+  models.LoginResponse:
+    properties:
+      message:
+        description: 反馈信息
+        type: string
+      token:
+        description: 登录token
+        type: string
+    type: object
+  models.SearchData:
+    properties:
+      text:
+        type: string
+      value:
+        type: integer
+    type: object
+  models.SearchRequest:
+    properties:
+      target:
+        type: string
+    type: object
+  models.User:
+    properties:
+      password:
+        description: 密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    type: object
+host: 127.0.0.1:8181
+info:
+  contact:
+    email: hetao.kawaii@bytedance.com
+    name: hetao.kawaii
+    url: https://hetao.kawaii.com
+  description: This is grpc message queue server api
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: grpc MQ API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: 通过请求验证请求
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: 接口验证
+      tags:
+      - 验证
+  /login:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 通过用户名和密码登录
+      parameters:
+      - description: 用户登录信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: 登录
+      tags:
+      - 登录
+  /search:
+    post:
+      consumes:
+      - application/json
+      description: 查询grafana 图表 数据
+      parameters:
+      - description: 查询请求
+        in: body
+        name: searchRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.SearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SearchData'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: grafana 数据查询接口
+      tags:
+      - 查询接口
+swagger: "2.0"
