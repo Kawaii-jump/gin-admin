@@ -58,3 +58,41 @@ type QueryData struct {
 	Target     string          `json:"target"`
 	Datapoints [][]interface{} `json:"datapoints"`
 }
+
+//AnnotationRequest annotation request
+type AnnotationRequest struct {
+	Range struct {
+		From time.Time `json:"from"`
+		To   time.Time `json:"to"`
+	} `json:"range"`
+	RangeRaw struct {
+		From string `json:"from"`
+		To   string `json:"to"`
+	} `json:"rangeRaw"`
+	Annotation Annotation `json:"annotation"`
+}
+
+//Annotation annotation
+type Annotation struct {
+	Name string `json:"name"`
+
+	Datasource string `json:"datasource"`
+	IconColor  string `json:"iconColor"`
+	Enable     bool   `json:"enable"`
+	ShowLine   bool   `json:"showLine"`
+	Query      string `json:"query"`
+}
+
+//AnnotationResponse annotation response
+type AnnotationResponse struct {
+	// The original annotation sent from Grafana.
+	Annotation Annotation `json:"annotation"`
+	// Time since UNIX Epoch in milliseconds. (required)
+	Time int64 `json:"time"`
+	// The title for the annotation tooltip. (required)
+	Title string `json:"title"`
+	// Tags for the annotation. (optional)
+	Tags string `json:"tags"`
+	// Text for the annotation. (optional)
+	Text string `json:"text"`
+}
