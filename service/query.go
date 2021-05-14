@@ -36,6 +36,13 @@ func ProduceDatas(period time.Duration) {
 				for _, data := range res {
 					queue.Push(data)
 				}
+			} else {
+				queue.Pop()
+				queue.Pop()
+				res := GetNodesStatus(tt)
+				for _, data := range res {
+					queue.Push(data)
+				}
 			}
 		case <-queue.ctx.Done():
 			return

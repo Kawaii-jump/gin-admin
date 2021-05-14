@@ -17,7 +17,7 @@ type Queue struct {
 //NewQueue create queue
 func NewQueue() *Queue {
 	list := make([]models.QueryData, 0)
-	return &Queue{list: list}
+	return &Queue{list: list, ctx: context.Background()}
 }
 
 //Push add struct to queue
