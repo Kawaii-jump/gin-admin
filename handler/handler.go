@@ -33,6 +33,26 @@ func HandleLogin(ctx *gin.Context) {
 	}
 }
 
+//HandleGetUserInfo doc
+// @Summary 登录
+// @Description 通过用户名和密码登录
+// @Tags 登录
+// @Accept mpfd
+// @Produce json
+// @Param user body models.User true "用户登录信息"
+// @Success 200 {object} models.LoginResponse 返回信息
+// @Failure 500 {string} string 错误信息
+// @Router /login [post]
+func HandleGetUserInfo(ctx *gin.Context) {
+	ctx.JSON(200, &models.UserInfo{
+		Name:   "test",
+		UserID: "10086",
+		Access: []string{"test"},
+		Token:  "haha",
+		Avator: "https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png",
+	})
+}
+
 //HandleRoot handle root
 // @Summary 接口验证
 // @Description 通过请求验证请求
