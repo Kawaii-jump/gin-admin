@@ -61,11 +61,25 @@ func HandleSearch(ctx *gin.Context) {
 // @Router /query [post]
 func HandleQuery(ctx *gin.Context) {
 	var queryRequest models.QueryRequest
+	res := service.GetQueryDatas("timeserie")
+	var points map[string][][]interface{}
+	points = make(map[string][][]interface{})
+	for _, data := range res {
+		if data.Target == "health_nodes" {
+			points["health_nodes"] = append(points["health_nodes"], data.Datapoints...)
+		} else if data.Target == "all_nodes" {
+			points["all_nodes"] = append(points["all_nodes"], data.Datapoints...)
+		}
+	}
 	if err := ctx.BindJSON(&queryRequest); err == nil {
 		var queryResponse models.QueryResponse
+
 		for _, target := range queryRequest.Targets {
 			if target.Type == "timeserie" {
-				queryResponse = service.GetQueryDatas(target.Type)
+				queryResponse = append(queryResponse, models.QueryData{
+					Target:     target.Target,
+					Datapoints: points[target.Target],
+				})
 			}
 		}
 		ctx.JSON(200, queryResponse)
