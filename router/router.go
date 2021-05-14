@@ -20,7 +20,7 @@ func InitRouter() {
 		v1.Any("/", handler.HandleRoot)
 		v1.POST("/search", handler.HandleSearch)
 		v1.POST("/query", handler.HandleQuery)
-		v1.POST("/login", handler.HandleLogin)
+		// v1.POST("/login", handler.HandleLogin)
 		v1.POST("/annotations", handler.HandleAnnotation)
 		// v1.OPTIONS("/login", handler.HandleOption)
 	}

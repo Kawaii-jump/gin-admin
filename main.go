@@ -1,8 +1,11 @@
 package main
 
 import (
+	"time"
+
 	_ "github.com/Kawaii-jump/gin-admin/docs"
 	"github.com/Kawaii-jump/gin-admin/router"
+	"github.com/Kawaii-jump/gin-admin/service"
 )
 
 // @title grpc MQ API
@@ -20,5 +23,6 @@ import (
 // @BasePath /api/v1
 
 func main() {
+	go service.ProduceDatas(5 * time.Second)
 	router.InitRouter()
 }

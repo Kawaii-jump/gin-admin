@@ -3,35 +3,11 @@ package handler
 import (
 	"time"
 
+	"github.com/Kawaii-jump/gin-admin/logger"
 	"github.com/Kawaii-jump/gin-admin/models"
+	"github.com/Kawaii-jump/gin-admin/service"
 	"github.com/gin-gonic/gin"
 )
-
-//HandleLogin doc
-// @Summary 登录
-// @Description 通过用户名和密码登录
-// @Tags 登录
-// @Accept mpfd
-// @Produce json
-// @Param user body models.User true "用户登录信息"
-// @Success 200 {object} models.LoginResponse 返回信息
-// @Failure 500 {string} string 错误信息
-// @Router /login [post]
-func HandleLogin(ctx *gin.Context) {
-
-	var user models.User
-
-	if err := ctx.BindJSON(&user); err == nil {
-		if user.UserName != "haha" || user.Passworld != "haha" {
-			ctx.JSON(200, &models.LoginResponse{Message: "用户名或密码错误！", Token: ""})
-			return
-		} else {
-			ctx.JSON(200, &models.LoginResponse{Message: "登录成功！", Token: user.UserName})
-		}
-	} else {
-		ctx.JSON(400, "格式错误")
-	}
-}
 
 //HandleRoot handle root
 // @Summary 接口验证
@@ -67,6 +43,7 @@ func HandleSearch(ctx *gin.Context) {
 		}
 		ctx.JSON(200, searchResponse)
 	} else {
+		logger.Errorf("bind json error,err:", err)
 		ctx.JSON(400, "Bad request")
 	}
 	return
@@ -88,15 +65,12 @@ func HandleQuery(ctx *gin.Context) {
 		var queryResponse models.QueryResponse
 		for _, target := range queryRequest.Targets {
 			if target.Type == "timeserie" {
-				querData := &models.QueryData{
-					Target:     target.Target,
-					Datapoints: [][]interface{}{{1, time.Now().Unix() * 1000}},
-				}
-				queryResponse = append(queryResponse, *querData)
+				queryResponse = service.GetQueryDatas(target.Type)
 			}
 		}
 		ctx.JSON(200, queryResponse)
 	} else {
+		logger.Errorf("bind json error,err:", err)
 		ctx.JSON(400, "bad request")
 	}
 	return
