@@ -37,9 +37,9 @@ func HandleSearch(ctx *gin.Context) {
 	var searchRequest models.SearchRequest
 
 	if err := ctx.BindJSON(&searchRequest); err == nil {
-		searchResponse := make(models.SearchMapResponse, 2)
-		for i, metrics := range metricsArrary {
-			searchResponse = append(searchResponse, models.SearchData{Text: metrics, Value: i})
+		searchResponse := make(models.SearchArrayResponse, 2)
+		for _, metrics := range metricsArrary {
+			searchResponse = append(searchResponse, metrics)
 		}
 		ctx.JSON(200, searchResponse)
 	} else {
