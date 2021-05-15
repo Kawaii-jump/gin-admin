@@ -50,13 +50,29 @@ type QueryRequest struct {
 	MaxDataPoints int    `json:"maxDataPoints"`
 }
 
-//QueryResponse query resquest
+//QueryResponse query response
 type QueryResponse []QueryData
 
 //Data query result data
 type QueryData struct {
 	Target     string          `json:"target"`
 	Datapoints [][]interface{} `json:"datapoints"`
+}
+
+//QueryTableResponse query table response
+type QueryTableResponse []QueryTableData
+
+//QueryTableData query table data
+type QueryTableData struct {
+	Columns []TableColumn   `json:"columns"`
+	Rows    [][]interface{} `json:"rows"`
+	Type    string          `json:"type"`
+}
+
+//TableColumn table column
+type TableColumn struct {
+	Text string `json:"text"`
+	Type string `json:"type"`
 }
 
 //AnnotationRequest annotation request

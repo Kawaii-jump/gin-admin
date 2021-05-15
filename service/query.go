@@ -13,7 +13,7 @@ var services []string
 
 func init() {
 	queue = NewQueue()
-	services = []string{"localhost:8081", "localhost:8081", "localhost:8081"}
+	services = []string{"localhost:8181", "localhost:8181", "localhost:8081"}
 }
 
 //GetQueryDatas get query result
@@ -31,7 +31,7 @@ func ProduceDatas(period time.Duration) {
 		select {
 		case <-t.C:
 			tt := time.Now().Unix() * 1000
-			if len(queue.list) < 100 {
+			if len(queue.list) < 1000 {
 				res := GetNodesStatus(tt)
 				for _, data := range res {
 					queue.Push(data)
@@ -66,6 +66,29 @@ func GetNodesStatus(t int64) (res [2]models.QueryData) {
 	res[1] = models.QueryData{
 		Target:     "all_nodes",
 		Datapoints: [][]interface{}{{all_nodes, t}},
+	}
+	return
+}
+
+//GetNodesStatusToTable get mq nodes to grafana table
+func GetNodesStatusToTable(target string) (columns []models.TableColumn, rows [][]interface{}) {
+	if target == "node" {
+		columns = append(columns, models.TableColumn{
+			Text: "Server",
+			Type: "string",
+		})
+		columns = append(columns, models.TableColumn{
+			Text: "Status",
+			Type: "number",
+		})
+	}
+
+	for _, server := range services {
+		if judgeLive(server) {
+			rows = append(rows, []interface{}{server, 1})
+		} else {
+			rows = append(rows, []interface{}{server, 0})
+		}
 	}
 	return
 }

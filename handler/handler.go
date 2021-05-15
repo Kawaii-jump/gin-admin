@@ -33,11 +33,11 @@ func HandleRoot(ctx *gin.Context) {
 // @Failure 500 {string} string 错误信息
 // @Router /search [post]
 func HandleSearch(ctx *gin.Context) {
-	metricsArrary := []string{"health_nodes", "all_nodes"}
+	metricsArrary := []string{"health_nodes", "all_nodes", "node"}
 	var searchRequest models.SearchRequest
 
 	if err := ctx.BindJSON(&searchRequest); err == nil {
-		searchResponse := make(models.SearchArrayResponse, 2)
+		searchResponse := make(models.SearchArrayResponse, 3)
 		for _, metrics := range metricsArrary {
 			searchResponse = append(searchResponse, metrics)
 		}
@@ -73,6 +73,7 @@ func HandleQuery(ctx *gin.Context) {
 	}
 	if err := ctx.BindJSON(&queryRequest); err == nil {
 		var queryResponse models.QueryResponse
+		var queryTableResponse models.QueryTableResponse
 
 		for _, target := range queryRequest.Targets {
 			if target.Type == "timeserie" {
@@ -80,9 +81,22 @@ func HandleQuery(ctx *gin.Context) {
 					Target:     target.Target,
 					Datapoints: points[target.Target],
 				})
+			} else if target.Type == "table" {
+				columns, rows := service.GetNodesStatusToTable(target.Target)
+				queryTableResponse = append(queryTableResponse, models.QueryTableData{
+					Columns: columns,
+					Rows:    rows,
+					Type:    target.Type,
+				})
 			}
 		}
-		ctx.JSON(200, queryResponse)
+		if len(queryResponse) != 0 {
+			ctx.JSON(200, queryResponse)
+		}
+
+		if len(queryTableResponse) != 0 {
+			ctx.JSON(200, queryTableResponse)
+		}
 	} else {
 		logger.Errorf("bind json error,err:", err)
 		ctx.JSON(400, "bad request")
