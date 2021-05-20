@@ -27,7 +27,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "验证"
+                    "grafana接口"
                 ],
                 "summary": "接口验证",
                 "responses": {
@@ -46,27 +46,27 @@
                 }
             }
         },
-        "/login": {
+        "/annotations": {
             "post": {
-                "description": "通过用户名和密码登录",
+                "description": "grafana Annotation 接口",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "登录"
+                    "grafana接口"
                 ],
-                "summary": "登录",
+                "summary": "grafana Annotation 接口",
                 "parameters": [
                     {
-                        "description": "用户登录信息",
-                        "name": "user",
+                        "description": "请求",
+                        "name": "annotation",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.AnnotationRequest"
                         }
                     }
                 ],
@@ -74,7 +74,50 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.LoginResponse"
+                            "$ref": "#/definitions/models.AnnotationResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/query": {
+            "post": {
+                "description": "查询grafana 图表 数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "grafana接口"
+                ],
+                "summary": "grafana 数据查询接口",
+                "parameters": [
+                    {
+                        "description": "查询请求",
+                        "name": "queryRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.QueryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.QueryData"
+                            }
                         }
                     },
                     "500": {
@@ -88,7 +131,7 @@
         },
         "/search": {
             "post": {
-                "description": "查询grafana 图表 数据",
+                "description": "查询grafana matrics 数据",
                 "consumes": [
                     "application/json"
                 ],
@@ -96,9 +139,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "查询接口"
+                    "grafana接口"
                 ],
-                "summary": "grafana 数据查询接口",
+                "summary": "grafana 查询接口",
                 "parameters": [
                     {
                         "description": "查询请求",
@@ -131,16 +174,185 @@
         }
     },
     "definitions": {
-        "models.LoginResponse": {
+        "models.Annotation": {
             "type": "object",
             "properties": {
-                "message": {
-                    "description": "反馈信息",
+                "datasource": {
                     "type": "string"
                 },
-                "token": {
-                    "description": "登录token",
+                "enable": {
+                    "type": "boolean"
+                },
+                "iconColor": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "string"
+                },
+                "showLine": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.AnnotationRequest": {
+            "type": "object",
+            "properties": {
+                "annotation": {
+                    "$ref": "#/definitions/models.Annotation"
+                },
+                "range": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "string"
+                        },
+                        "to": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "rangeRaw": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "string"
+                        },
+                        "to": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "models.AnnotationResponse": {
+            "type": "object",
+            "properties": {
+                "annotation": {
+                    "description": "The original annotation sent from Grafana.",
+                    "$ref": "#/definitions/models.Annotation"
+                },
+                "tags": {
+                    "description": "Tags for the annotation. (optional)",
+                    "type": "string"
+                },
+                "text": {
+                    "description": "Text for the annotation. (optional)",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "Time since UNIX Epoch in milliseconds. (required)",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "The title for the annotation tooltip. (required)",
+                    "type": "string"
+                }
+            }
+        },
+        "models.QueryData": {
+            "type": "object",
+            "properties": {
+                "datapoints": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "target": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.QueryRequest": {
+            "type": "object",
+            "properties": {
+                "adhocFilters": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "key": {
+                                "type": "string"
+                            },
+                            "operator": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "format": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "string"
+                },
+                "intervalMs": {
+                    "type": "integer"
+                },
+                "maxDataPoints": {
+                    "type": "integer"
+                },
+                "panelId": {
+                    "type": "integer"
+                },
+                "range": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "string"
+                        },
+                        "raw": {
+                            "type": "object",
+                            "properties": {
+                                "from": {
+                                    "type": "string"
+                                },
+                                "to": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "to": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "rangeRaw": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "string"
+                        },
+                        "to": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "refId": {
+                                "type": "string"
+                            },
+                            "target": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -159,19 +371,6 @@
             "type": "object",
             "properties": {
                 "target": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.User": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "description": "密码",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
                     "type": "string"
                 }
             }

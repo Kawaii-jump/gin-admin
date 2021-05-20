@@ -1,13 +1,123 @@
 basePath: /api/v1
 definitions:
-  models.LoginResponse:
+  models.Annotation:
     properties:
-      message:
-        description: 反馈信息
+      datasource:
         type: string
-      token:
-        description: 登录token
+      enable:
+        type: boolean
+      iconColor:
         type: string
+      name:
+        type: string
+      query:
+        type: string
+      showLine:
+        type: boolean
+    type: object
+  models.AnnotationRequest:
+    properties:
+      annotation:
+        $ref: '#/definitions/models.Annotation'
+      range:
+        properties:
+          from:
+            type: string
+          to:
+            type: string
+        type: object
+      rangeRaw:
+        properties:
+          from:
+            type: string
+          to:
+            type: string
+        type: object
+    type: object
+  models.AnnotationResponse:
+    properties:
+      annotation:
+        $ref: '#/definitions/models.Annotation'
+        description: The original annotation sent from Grafana.
+      tags:
+        description: Tags for the annotation. (optional)
+        type: string
+      text:
+        description: Text for the annotation. (optional)
+        type: string
+      time:
+        description: Time since UNIX Epoch in milliseconds. (required)
+        type: integer
+      title:
+        description: The title for the annotation tooltip. (required)
+        type: string
+    type: object
+  models.QueryData:
+    properties:
+      datapoints:
+        items:
+          items:
+            type: object
+          type: array
+        type: array
+      target:
+        type: string
+    type: object
+  models.QueryRequest:
+    properties:
+      adhocFilters:
+        items:
+          properties:
+            key:
+              type: string
+            operator:
+              type: string
+            value:
+              type: string
+          type: object
+        type: array
+      format:
+        type: string
+      interval:
+        type: string
+      intervalMs:
+        type: integer
+      maxDataPoints:
+        type: integer
+      panelId:
+        type: integer
+      range:
+        properties:
+          from:
+            type: string
+          raw:
+            properties:
+              from:
+                type: string
+              to:
+                type: string
+            type: object
+          to:
+            type: string
+        type: object
+      rangeRaw:
+        properties:
+          from:
+            type: string
+          to:
+            type: string
+        type: object
+      targets:
+        items:
+          properties:
+            refId:
+              type: string
+            target:
+              type: string
+            type:
+              type: string
+          type: object
+        type: array
     type: object
   models.SearchData:
     properties:
@@ -19,15 +129,6 @@ definitions:
   models.SearchRequest:
     properties:
       target:
-        type: string
-    type: object
-  models.User:
-    properties:
-      password:
-        description: 密码
-        type: string
-      username:
-        description: 用户名
         type: string
     type: object
 host: 127.0.0.1:8181
@@ -61,38 +162,66 @@ paths:
             type: string
       summary: 接口验证
       tags:
-      - 验证
-  /login:
+      - grafana接口
+  /annotations:
     post:
       consumes:
-      - multipart/form-data
-      description: 通过用户名和密码登录
+      - application/json
+      description: grafana Annotation 接口
       parameters:
-      - description: 用户登录信息
+      - description: 请求
         in: body
-        name: user
+        name: annotation
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.AnnotationRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.LoginResponse'
+            $ref: '#/definitions/models.AnnotationResponse'
         "500":
           description: Internal Server Error
           schema:
             type: string
-      summary: 登录
+      summary: grafana Annotation 接口
       tags:
-      - 登录
-  /search:
+      - grafana接口
+  /query:
     post:
       consumes:
       - application/json
       description: 查询grafana 图表 数据
+      parameters:
+      - description: 查询请求
+        in: body
+        name: queryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.QueryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.QueryData'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: grafana 数据查询接口
+      tags:
+      - grafana接口
+  /search:
+    post:
+      consumes:
+      - application/json
+      description: 查询grafana matrics 数据
       parameters:
       - description: 查询请求
         in: body
@@ -113,7 +242,7 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: grafana 数据查询接口
+      summary: grafana 查询接口
       tags:
-      - 查询接口
+      - grafana接口
 swagger: "2.0"

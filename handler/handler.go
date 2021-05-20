@@ -25,7 +25,7 @@ func HandleRoot(ctx *gin.Context) {
 //HandleSearch handle search interface
 // @Summary grafana 查询接口
 // @Description 查询grafana matrics 数据
-// @Tags 查询接口
+// @Tags grafana接口
 // @Accept json
 // @Produce json
 // @Param searchRequest body models.SearchRequest true "查询请求"
@@ -110,10 +110,10 @@ func HandleQuery(ctx *gin.Context) {
 // @Tags grafana接口
 // @Accept json
 // @Produce json
-// @Param queryRequest body models.AnnotationRequest true "请求"
+// @Param annotation body models.AnnotationRequest true "请求"
 // @Success 200 {object} models.AnnotationResponse 返回信息
 // @Failure 500 {string} string 错误信息
-// @Router /query [post]
+// @Router /annotations [post]
 func HandleAnnotation(ctx *gin.Context) {
 	var annotation models.AnnotationRequest
 	if err := ctx.BindJSON(&annotation); err == nil {
